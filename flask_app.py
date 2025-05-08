@@ -13,17 +13,17 @@ from models import User, Timetable, LeaveRequest
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'manishk'  
+app.config['SECRET_KEY'] = 'your_secret_key'  
 
 # Define the path for the database
 os.makedirs(os.path.join(os.getcwd(), 'instance'), exist_ok=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.getcwd(), 'instance', 'timetable.db')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_SERVER'] = 'smtp.mail.server'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'manishpkharatamal@gmail.com'
-app.config['MAIL_PASSWORD'] = 'jbhq dzwq hsgi xfev'
+app.config['MAIL_USERNAME'] = 'smtp_email'
+app.config['MAIL_PASSWORD'] = 'mail_pass'
 
 # Initialize extensions
 db.init_app(app)
