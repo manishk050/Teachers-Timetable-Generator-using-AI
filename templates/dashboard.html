@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="animate__animated animate__fadeIn">
+    <h1 class="text-center mb-4">Dashboard</h1>
+    <p class="text-center">Welcome, {{ current_user.username }} ({{ current_user.role }}) {% if current_user.role == "HOD" %} - Department: {{ current_user.department }}{% endif %}</p>
+
+    {% if current_user.role == "HOD" %}
+        <!-- HOD's View -->
+        <div class="card p-4 mb-4">
+            <h2 class="mb-4">Teachers in {{ current_user.department }}</h2>
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Username</th>
+                        <th>Department</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                        <tr>
+                            <td>{{ teacher.username }}</td>
+                            <td>{{ teacher.department }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('reset_teacher_password', teacher_id=teacher.id) }}" class="d-inline">
+                                    <input type="text" name="new_password" placeholder="New Password" class="form-control d-inline-block w-auto" required>
+                                    <button type="submit" class="btn btn-warning btn-sm">Reset Password</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('remove_teacher', teacher_id=teacher.id) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                                <a href="{{ url_for('create_timetable', user_id=teacher.id) }}" class="btn btn-primary btn-sm">Create Timetable</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('add_teacher') }}" class="btn btn-success">Add Teacher</a>
+                <div>
+                    <a href="{{ url_for('report') }}" class="btn btn-info me-2">View Reports</a>
+                    <a href="{{ url_for('create_timetable') }}" class="btn btn-primary">Create My Timetable</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Calendar for both HODs and Teachers -->
+    <div class="card p-4 mb-4">
+        <h2 class="mb-4">Your Schedule</h2>
+        <div id="calendar"></div>
+        <div id="timetable-container" class="mt-4"></div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM fully loaded, initializing FullCalendar...");
+
+    var calendarEl = document.getElementById('calendar');
+    if (!calendarEl) {
+        console.error("Calendar element not found in the DOM!");
+        return;
+    }
+
+    var selectedDate;
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        selectable: true,  // Ensure dates are selectable
+        dateClick: function(info) {
+            console.log("Date clicked:", info.dateStr);  // Debug: Confirm date click
+            selectedDate = info.dateStr;
+            fetch('/get_timetable?date=' + selectedDate)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Timetable data received:", data);  // Debug: Confirm data received
+                    displayTimetable(data, selectedDate);
+                })
+                .catch(error => {
+                    console.error('Error fetching timetable:', error);
+                    document.getElementById('timetable-container').innerHTML = '<p class="text-danger">Error loading timetable. Please try again.</p>';
+                });
+        },
+        events: '/get_leave_events',
+        eventDidMount: function(info) {
+            console.log("Event rendered:", info.event.title, info.event.start);  // Debug: Confirm events are loaded
+        }
+    });
+
+    try {
+        calendar.render();
+        console.log("FullCalendar rendered successfully.");
+    } catch (error) {
+        console.error("Error rendering FullCalendar:", error);
+    }
+});
+
+function displayTimetable(data, selectedDate) {
+    var container = document.getElementById('timetable-container');
+    var html = '<h3>Timetable for ' + selectedDate + '</h3>';
+    if (data.length === 0) {
+        html += '<p>No timetable available for this day. Please contact your HOD to create a timetable.</p>';
+    } else {
+        html += '<table class="table table-bordered table-hover">';
+        html += '<thead class="table-dark"><tr><th>Session</th><th>Status</th><th>Action</th></tr></thead>';
+        html += '<tbody>';
+        data.forEach(function(entry) {
+            html += '<tr>';
+            html += '<td>' + entry.session + '</td>';
+            html += '<td class="' + (entry.status === 'Busy' ? 'table-danger' : entry.status === 'Free' ? 'table-success' : 'table-info') + '">';
+            html += entry.status;
+            if (entry.status === 'On Leave' && entry.substitute) {
+                html += ' (Sub: ' + entry.substitute + ')';
+            }
+            html += '</td>';
+            html += '<td>';
+            if (entry.status === 'Busy') {
+                html += '<form method="POST" action="/apply_leave">';
+                html += '<input type="hidden" name="date" value="' + selectedDate + '">';
+                html += '<input type="hidden" name="session" value="' + entry.session + '">';
+                html += '<button type="submit" class="btn btn-primary btn-sm">Apply for Leave</button>';
+                html += '</form>';
+            } else if (entry.status === 'On Leave') {
+                html += 'Leave Requested';
+            } else {
+                html += '-';
+            }
+            html += '</td>';
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+    }
+    container.innerHTML = html;
+}
+</script>
+{% endblock %}

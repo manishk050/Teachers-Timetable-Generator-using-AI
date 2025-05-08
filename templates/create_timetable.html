@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Create Timetable{% endblock %}
+
+{% block content %}
+<div class="animate__animated animate__fadeIn">
+    <h1 class="text-center mb-4">Create Timetable for {{ target_user.username }}</h1>
+
+    {% if not generated %}
+        <!-- Form to specify number of days and sessions -->
+        <div class="card p-4 mb-4">
+            <h2 class="mb-4">Specify Timetable Parameters</h2>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="num_days" class="form-label">Number of Days (1-7):</label>
+                    <input type="number" class="form-control" id="num_days" name="num_days" min="1" max="7" value="5" required>
+                </div>
+                <div class="mb-3">
+                    <label for="num_sessions" class="form-label">Number of Sessions per Day (1 or more):</label>
+                    <input type="number" class="form-control" id="num_sessions" name="num_sessions" min="1" value="5" required>
+                    <small class="form-text text-muted">Maximum 24 sessions per day for performance reasons.</small>
+                </div>
+                <button type="submit" class="btn btn-primary" name="generate">Generate Timetable</button>
+            </form>
+        </div>
+    {% else %}
+        <!-- Display the generated timetable for editing -->
+        <div class="card p-4 mb-4">
+            <h2 class="mb-4">Edit Timetable for {{ target_user.username }}</h2>
+            <form method="POST">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Day</th>
+                            {% for session in range(1, num_sessions + 1) %}
+                                <th>Session {{ session }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in days %}
+                            <tr>
+                                <td>{{ day }}</td>
+                                {% for session in range(1, num_sessions + 1) %}
+                                    <td>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="busy-{{ day }}-{{ session }}" name="busy-{{ day }}-{{ session }}"
+                                                {% if timetable_dict[day][session] == "Busy" %} checked {% endif %}>
+                                            <label class="form-check-label" for="busy-{{ day }}-{{ session }}">Busy</label>
+                                        </div>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-success" name="save">Save Timetable</button>
+                <a href="{{ url_for('create_timetable', user_id=target_user.id) }}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

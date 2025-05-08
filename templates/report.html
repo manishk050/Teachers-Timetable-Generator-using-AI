@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Leave Reports{% endblock %}
+
+{% block content %}
+<div class="animate__animated animate__fadeIn">
+    <h1 class="text-center mb-4">Leave Reports</h1>
+    <h3 class="text-center mb-4">Department: {{ current_user.department }}</h3>
+    <div class="card p-4">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Teacher</th>
+                    <th>Substitute</th>
+                    <th>Date</th>
+                    <th>Session</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for leave in leaves %}
+                    <tr>
+                        <td>{{ leave.teacher.username }}</td>
+                        <td>{{ leave.substitute.username }}</td>
+                        <td>{{ leave.date }}</td>
+                        <td>{{ leave.session }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

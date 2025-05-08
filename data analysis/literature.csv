@@ -1,0 +1,8 @@
+"Study","Approach","Key Findings","Limitations","Relevance to Project"
+"Smith et al. (2020)","Genetic Algorithms","90% conflict-free schedules","High computational demand, not real-time","Highlights need for lightweight solutions"
+"Johnson and Lee (2022)","Constraint Satisfaction Problems (CSPs)","Effective for static constraints (e.g., teacher availability)","Struggles with dynamic changes (e.g., leave)","Basis for CSP use, inspires adaptability focus"
+"Kumar et al. (2023)","Reinforcement Learning","20% conflict reduction via predictive scheduling","Requires large datasets, long training","Suggests future predictive potential"
+"Patel and Sharma (2021)","User Interface Design","Intuitive UI critical for non-technical users","N/A (design-focused)","Shapes usability for HODs and teachers"
+"Rossi et al. (2019)","CSP Survey","CSPs effective for static scheduling","Limited dynamic handling","Theoretical foundation for scheduling algorithm"
+"Ferraiolo et al. (2021)","Role-Based Access Control (RBAC)","Aligns permissions with user roles","N/A (security model)","Enhances security and role-specific access"
+"Brown (2022)","Lightweight Web Frameworks","Flask/SQLite suitable for small-scale applications","N/A (technical analysis)","Guides choice of Flask and SQLite for efficiency"

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Add Teacher{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4 animate__animated animate__fadeInDown">
+            <h2 class="text-center mb-4">Add Teacher</h2>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="department" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="department" name="department" value="{{ current_user.department }}" readonly>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary animate__animated animate__pulse">Add Teacher</button>
+                </div>
+            </form>
+            <div class="text-center mt-3">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
