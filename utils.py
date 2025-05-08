@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app
 from models import User
 
-serializer = URLSafeTimedSerializer("manishk")
+serializer = URLSafeTimedSerializer("your_secret_key")
 
 def generate_reset_token(user):
     return serializer.dumps(user.id, salt="password-reset-salt")
